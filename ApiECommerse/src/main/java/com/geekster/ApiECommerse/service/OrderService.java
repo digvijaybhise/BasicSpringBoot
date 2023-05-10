@@ -30,14 +30,26 @@ public class OrderService {
     public void creteOrder(Orders orders) {
 
         Integer addressId = orders.getOrderAddress().getAddressId();
-        Address address = addressRepo.getById(addressId);
+        Address address = addressRepo.findById(addressId).get();
 
         Integer productId = orders.getOrderProduct().getProductId();
-        Product product = productRepo.getById(productId);
+        Product product = productRepo.findById(productId).get();
 
         Integer userId = orders.getOrderUser().getUserId();
-        Users user = userRepo.getById(userId);
+        Users user = userRepo.findById(userId).get();
 
-        ordersRepo.save(orders);
+        if(address != null && product != null && user != null){
+            orders.setOrderProduct(product);
+            orders.setOrderAddress(address);
+            orders.setOrderUser(user);
+
+            ordersRepo.save(orders);
+        }else {
+            throw new IllegalStateException("Please fill the valid details");
+        }
+    }
+
+    public Orders getById(Long orderId) {
+        return ordersRepo.findById(orderId).get();
     }
 }
